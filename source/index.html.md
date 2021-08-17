@@ -1,241 +1,542 @@
 ---
-title: API Reference
-
-language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
-  - ruby
-  - python
-  - javascript
-
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/slatedocs/slate'>Documentation Powered by Slate</a>
-
-includes:
-  - errors
-
+title: Automate API
+# language_tabs:
+#   - shell: Bash
+#   - python: Python
+#   - javascript: JavaScript
+toc_footers: []
+includes: []
 search: true
-
-code_clipboard: true
+highlight_theme: darkula
+headingLevel: 2
 ---
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the Primer Automate API! You can use our API to access various Automate endpoints.
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+> The base URL for your API calls is:
 
-This example API documentation page was created with [Slate](https://github.com/slatedocs/slate). Feel free to edit it and use it as a base for your own API's documentation.
-
-# Authentication
-
-> To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+```
+https://auto.primer.ai/api/v1alpha/automate/
 ```
 
-```python
-import kittn
+## Getting Started
 
-api = kittn.authorize('meowmeowmeow')
-```
+Requests to Automate are standard HTTP(s) calls that can be made from the command line or using the tools available in your chosen programming language, framework, or BI tool. There’s no need to install any additional bespoke packages.
+
+Here is an example request:
 
 ```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here" \
-  -H "Authorization: meowmeowmeow"
+curl -X 'POST' 'https://auto.primer.ai/api/v1alpha/automate/models/e9176b92-ad5f-46b8-8a6a-1363709db18e/predictions' \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "The content to analyze goes here"}' \
+  -H 'Authorization: JWT $YOUR_TOKEN'
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens" \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
-
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2" \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+> The model you train on Automate analyzes your content and responds with its predictions in JSON format.
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "labels": [
+    {
+      "label": "NT",
+      "score": 0.946445643901825,
+      "threshold": 0.5,
+      "classification": true
+    },
+    {
+      "label": "OT",
+      "score": 0.13132330775260925,
+      "threshold": 0.5,
+      "classification": false
+    }
+  ],
+  "model_type": "CLF_MULTILABEL"
 }
 ```
 
-This endpoint retrieves a specific kitten.
+## Authentication
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+Automate requests must include a JSON Web Token (JWT) that can be generated by making a POST request to the following URL with your username and password:
 
-### HTTP Request
+`https://sso.primer.ai/api/v1alpha/auth/login`
 
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
+> Using Python:
 
 ```python
-import kittn
+res = requests.post(
+    "https://sso.primer.ai/api/v1alpha/auth/login",
+    headers={"Content-Type": "application/json"},
+    data=json.dumps(
+        {
+            "username": '$YOUR_USERNAME',
+            "password": '$YOUR_PASSWORD',
+        }
+    ),
+)
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
+JWT_TOKEN = res.json()['access_token]
 ```
+
+> Using cURL:
 
 ```shell
-curl "http://example.com/api/kittens/2" \
-  -X DELETE \
-  -H "Authorization: meowmeowmeow"
+curl -X POST "https://sso.primer.ai/api/v1alpha/auth/login" \
+  -H 'Content-Type: application/json' \
+  -d '{"username": "$YOUR_USERNAME", "password": "$YOUR_PASSWORD"}'
 ```
 
-```javascript
-const kittn = require('kittn');
+## Glossary
 
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
+| **Term**       | **Definition**                                                                                                                                                                                  |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Datasets**   | Data you upload is shared amongst your organization. Can be used in model preview or to get large scale predictions. It comprises training data as well as data to be analyzed by a model.      |
+| **Documents**  | A dataset is made up of individual documents. These can be thought of as rows of data, or individual pieces of text to analyze.                                                                 |
+| **Models**     | A list of the models in your account (templates you’ve liked and want to use). This is unique to you. Each model links to a page where you can get predictions or API credentials.              |
+| **Prediction** | A prediction is what a model does with a piece of data you provide it. Each model may provide a different kind of result, but every unique judgment it makes is a prediction.                   |
+| **Labels**     | Each prediction provides one or a number of labels. If a model can predict ten labels, for example our COVID classification model, your prediction will include ten results for the ten labels. |
+
+# Datasets
+
+Data you upload is shared amongst your organization. Can be used in model preview or to get large scale predictions. It comprises training data as well as data to be analyzed by a model.
+
+## View all datasets
+
+> Endpoint
+
+```
+GET /datasets/
 ```
 
-> The above command returns JSON structured like this:
+_Gets all dataset objects_
+
+> Response
 
 ```json
 {
-  "id": 2,
-  "deleted" : ":("
+  "filters": [...],
+  "datasets": [
+    {
+      "is_archived": false,
+      "description": null,
+      "creation_date": "2020-12-11T18:43:52.808062+00:00",
+      "modified_date": "2020-12-11T18:43:52.808076+00:00",
+      "num_documents": 100,
+      "org_id": 1,
+      "display_name": "covid_news_100.csv    ",
+      "id": "58592a10-2eec-4424-a979-dae22bf94f5b",
+      "document_type": "News",
+      "user_id": "2976519311808060202",
+      "models": [
+        {
+          "name": "Covid classifier",
+          "id": "778f99eb-565d-4f96-88bd-4d820e5f63a6"
+        },
+        {
+          "name": "CDC Analysis",
+          "id": "e9ce751e-ad36-4c30-b44e-82ded4d84d7a"
+        },
+        {
+          "name": "Healthcare news",
+          "id": "2746047b-7a9f-486a-9b10-8c4c531fa7be"
+        },
+        {...}
+      ]
+    },
+    {...},
+  ]
 }
 ```
 
-This endpoint deletes a specific kitten.
+## Create a new dataset entry
 
-### HTTP Request
+> Endpoint
 
-`DELETE http://example.com/kittens/<ID>`
+```
+PUT /datasets/
+```
 
-### URL Parameters
+_Creates a new dataset meta entry_
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
+> Parameters
 
+```json
+{
+  "user_id": 4028440374033030052,
+  "is_archived": false,
+  "num_documents": 100,
+  "org_id": 1,
+  "display_name": "Bicycle_data",
+  "document_type": "Social Media",
+  "description": "Compiled bicycle dataset"
+}
+```
+
+### Parameters
+
+| Name          | In   | Type    | Required | Description                         |
+| ------------- | ---- | ------- | -------- | ----------------------------------- |
+| user_id       | body | integer | true     | User Id                             |
+| is_archived   | body | boolean | true     | Indicates the status of the dataset |
+| num_documents | body | integer | true     | Number of documents in the dataset  |
+| org_id        | body | integer | true     | Organization Id                     |
+| display_name  | body | string  | true     | Dataset name                        |
+| document_type | body | string  | true     | Dataset document type               |
+| description   | body | string  | false    | Dataset description                 |
+
+> Response
+
+```json
+{
+  "is_archived": false,
+  "description": "Compiled bicycle dataset",
+  "creation_date": "2021-08-04T03:36:52.020684+00:00",
+  "modified_date": "2021-08-04T03:36:52.020701+00:00",
+  "num_documents": 100,
+  "org_id": 1,
+  "display_name": "Bicycle_data",
+  "id": "ed106536-1cd0-46c2-9447-d08bc501d373",
+  "document_type": "Social Media",
+  "user_id": "4028440374033030052",
+  "models": []
+}
+```
+
+### Response
+
+| Status | Meaning                                                 | Description                         |
+| ------ | ------------------------------------------------------- | ----------------------------------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Request fulfilled, document follows |
+
+## Upload a new dataset
+
+> Endpoint
+
+```
+POST /datasets:upload
+```
+
+_Handles file uploads_
+
+> Parameters
+
+```shell
+dataset_meta_display_name={$YOUR_DATASET_NAME}
+dataset_meta_document_type=Other
+filetype={$YOUR_FILE_TYPE}
+```
+
+> Example request (cURL)
+
+```shell
+curl --data-binary '@dev/sample.csv' /
+"https://api.primer.ai/api/v1alpha/automate/datasets:upload?dataset_meta_display_name={$YOUR_DATASET_NAME}&dataset_meta_document_type=Other&filetype={$YOUR_FILE_TYPE}" /
+-H "Authorization: JWT $YOUR_TOKEN"
+
+```
+
+> Example request (Python)
+
+```python
+import requests
+
+data = open('./sample.csv', 'rb').read()
+params = {
+    'filetype': 'csv',
+    'dataset_meta_document_type': 'Other',
+    'dataset_meta_display_name': '$YOUR_DATASET_NAME'
+}
+headers = {
+    "Authorization":
+    "JWT $YOUR_TOKEN_HERE",
+    "Content-Type": "application/binary",
+}
+
+r = requests.post('https://api.primer.ai/api/v1alpha/automate/datasets:upload',
+                  params=params,
+                  headers=headers,
+                  data=data)
+print(r.text)
+```
+
+### Parameters
+
+| Name                       | In    | Type         | Required | Description                                     |
+| -------------------------- | ----- | ------------ | -------- | ----------------------------------------------- |
+| filetype                   | query | string       | true     | File type, valid options are: 'json' and 'csv'. |
+| dataset_meta_document_type | query | string       | true     | Dataset document type.                          |
+| dataset_meta_display_name  | query | string       | true     | Dataset display name.                           |
+| header_matching_text       | query | string       | false    | Text header defined by user.                    |
+| header_matching_title      | query | string       | false    | Title header defined by user.                   |
+| header_matching_id         | query | string       | false    | Id header defined by user.                      |
+| model_id                   | query | string(uuid) | false    | Model ID                                        |
+| header_matching_label      | query | string       | false    | Label header defined by user.                   |
+| dataset_meta_description   | query | string       | false    | Dataset description.                            |
+| header_matching_date       | query | string       | false    | Date header defined by user.                    |
+
+> Response
+
+```json
+{ "dataset_id": "3a437e2e-99fb-480c-a112-db9e82ae6ec7" }
+```
+
+### Response
+
+| Status | Meaning                                                      | Description                   |
+| ------ | ------------------------------------------------------------ | ----------------------------- |
+| 201    | [Created](https://tools.ietf.org/html/rfc7231#section-6.3.2) | Document created, URL follows |
+
+## Append data to existing dataset
+
+> Endpoint
+
+```
+PATCH /datasets:upload
+```
+
+_Handles the addition of extra rows into an existing dataset_
+
+Similar to post() method, but doesn't create a new dataset.
+
+<h3 id="patch_dataset_upload_handler-parameters">Parameters</h3>
+
+| Name                       | In    | Type         | Required | Description                                     |
+| -------------------------- | ----- | ------------ | -------- | ----------------------------------------------- |
+| header_matching_text       | query | string       | false    | Text header defined by user.                    |
+| header_matching_title      | query | string       | false    | Title header defined by user.                   |
+| filetype                   | query | string       | true     | File type, valid options are: 'json' and 'csv'. |
+| dataset_meta_document_type | query | string       | false    | Dataset document type.                          |
+| header_matching_id         | query | string       | false    | Id header defined by user.                      |
+| model_id                   | query | string(uuid) | false    | Model ID                                        |
+| header_matching_label      | query | string       | false    | Label header defined by user.                   |
+| dataset_meta_description   | query | string       | false    | Dataset description.                            |
+| dataset_meta_display_name  | query | string       | false    | Dataset display name.                           |
+| dataset_id                 | query | string(uuid) | true     | Dataset id                                      |
+| header_matching_date       | query | string       | false    | Date header defined by user.                    |
+
+### Response
+
+| Status | Meaning                                                 | Description |
+| ------ | ------------------------------------------------------- | ----------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Success     |
+
+# Labels
+
+## Download labels
+
+> Endpoint
+
+```
+GET /labels:download
+```
+
+_Gets all labels applied to a dataset's documents_
+
+Response is JSONL
+
+### Parameters
+
+| Name     | In    | Type         | Required | Description |
+| -------- | ----- | ------------ | -------- | ----------- |
+| model_id | query | string(uuid) | true     | Model Id    |
+
+> Response
+
+```json
+{"document_id": "1008012", "document_title": null, "document_date": null, "document_text": "All we have to decide is what to do with the time that is given us.", "labels": [{"annotator_name": "Jonathan Bradshaw", "annotator_id": 4028440374030030052, "date_created": "2021-07-01T17:37:16.952341+00:00", "label_name": "NT", "value": false}, {"annotator_name": "Jonathan Bradshaw", "annotator_id": 4028440374030030052, "date_created": "2021-07-01T17:37:16.163235+00:00", "label_name": "OT", "value": true}]}
+{"document_id": "1010019", "document_title": null, "document_date": null, "document_text": "It matters not what someone is born, but what they grow to be.", "labels": [{"annotator_name": "Jonathan Bradshaw", "annotator_id": 4028440374030030052, "date_created": "2021-07-01T17:32:27.362614+00:00", "label_name": "OT", "value": true}, {"annotator_name": "Jonathan Bradshaw", "annotator_id": 4028440374030030052, "date_created": "2021-07-01T17:32:28.722591+00:00", "label_name": "NT", "value": false}]}
+```
+
+### Response
+
+| Status | Meaning                                                 | Description |
+| ------ | ------------------------------------------------------- | ----------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Success     |
+
+# Models
+
+## Deploy a model
+
+> Endpoint
+
+```
+POST /models/{model_id}/deployment
+```
+
+_Deploys the latest version of a model_
+
+### Parameters
+
+| Name     | In   | Type   | Required | Description |
+| -------- | ---- | ------ | -------- | ----------- |
+| model_id | path | string | true     | none        |
+
+> Response
+
+```json
+{
+  "status_message": "Model deployment requested"
+}
+```
+
+### Response
+
+| Status | Meaning                                                      | Description                   | Schema                                                            |
+| ------ | ------------------------------------------------------------ | ----------------------------- | ----------------------------------------------------------------- |
+| 201    | [Created](https://tools.ietf.org/html/rfc7231#section-6.3.2) | Document created, URL follows | [ModelDeploymentCreateSchema](#schemamodeldeploymentcreateschema) |
+
+## Request model prediction for a text
+
+> Endpoint
+
+```
+POST /models/{model_id}/predictions
+```
+
+_Request predictions for a single text item passed as a parameter_
+
+> Body parameter
+
+```json
+{
+  "text": "It was the best of times, it was the blurst of times"
+}
+```
+
+### Parameters
+
+| Name     | In   | Type   | Required | Description         |
+| -------- | ---- | ------ | -------- | ------------------- |
+| text     | body | string | true     | Text for prediction |
+| model_id | path | string | true     | none                |
+
+> Response
+
+```json
+{
+  "labels": [
+    {
+      "label": "NT",
+      "score": 0.0020840661600232124,
+      "threshold": 0.5,
+      "classification": false
+    },
+    {
+      "label": "OT",
+      "score": 0.9969745874404907,
+      "threshold": 0.5,
+      "classification": true
+    }
+  ],
+  "model_type": "CLF_MULTILABEL"
+}
+```
+
+### Response
+
+| Status | Meaning                                                 | Description                         |
+| ------ | ------------------------------------------------------- | ----------------------------------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Request fulfilled, document follows |
+
+## Request bulk model predictions for text
+
+> Endpoint
+
+```
+POST /models/predictions
+```
+
+_Creates a new request for bulk predictions_
+
+> Body parameter
+
+```json
+{
+  "dataset_id": "f99d8aff-98e0-4c16-bb0d-a1dd0153aeae",
+  "model_id": "e9176b92-ad5f-46b8-8a6a-1363703db18e"
+}
+```
+
+### Parameters
+
+| Name       | In   | Type         | Required | Description |
+| ---------- | ---- | ------------ | -------- | ----------- |
+| model_id   | body | string(uuid) | true     | Model Id    |
+| dataset_id | body | string(uuid) | true     | Dataset Id  |
+
+> Response
+
+```json
+{
+  "request_predictions_id": 16443
+}
+```
+
+### Response
+
+| Status | Meaning                                                      | Description                   |
+| ------ | ------------------------------------------------------------ | ----------------------------- |
+| 201    | [Created](https://tools.ietf.org/html/rfc7231#section-6.3.2) | Document created, URL follows |
+
+## Get the status for a prediction job
+
+> Endpoint
+
+```
+GET /models/predictions/{request_predictions_id}/status
+```
+
+_Get prediction job status_
+
+### Parameters
+
+| Name                   | In   | Type    | Required | Description |
+| ---------------------- | ---- | ------- | -------- | ----------- |
+| request_predictions_id | path | integer | true     | none        |
+
+> Response
+
+```json
+{
+  "status": "PROCESSING"
+}
+```
+
+### Response
+
+| Status | Meaning                                                 | Description                         |
+| ------ | ------------------------------------------------------- | ----------------------------------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Request fulfilled, document follows |
+
+# Predictions
+
+## Download all predictions for a model
+
+> Endpoint
+
+```
+GET /predictions/
+```
+
+_Gets all predictions from dataset_id for model model_id_
+
+Generates a CSV or JSON file. The file is returned as the response payload and it should trigger a download prompt from the browser.
+
+This response's content is streamed, so there's no `Content-Length` header present
+(we can't tell the final size from the start). This might trigger spurious warnings about
+MIME types and document type mismatch in some browsers, but they should be safe to ignore.
+
+### Parameters
+
+| Name       | In    | Type         | Required | Description                      |
+| ---------- | ----- | ------------ | -------- | -------------------------------- |
+| dataset_id | query | string(uuid) | true     | Dataset Id                       |
+| model_id   | query | string(uuid) | true     | Model Id                         |
+| format     | query | string       | true     | Download request format e.g. CSV |
+
+### Response
+
+| Status | Meaning                                                 | Description |
+| ------ | ------------------------------------------------------- | ----------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | Success     |
